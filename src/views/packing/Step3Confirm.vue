@@ -20,7 +20,7 @@ const handleConfirm = async () => {
 
 const handlePrint = () => {
     if (packingStore.invoice?.receipt_number) {
-        router.push(`/print/packing/${packingStore.invoice.receipt_number}`);
+        router.push({ name: 'PrintPacking', params: { id: packingStore.invoice.receipt_number } });
     }
 };
 

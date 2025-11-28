@@ -89,12 +89,12 @@ const confirmReset = () => {
 
 const confirmCancelTransaction = () => {
     confirm.require({
-        message: 'Are you sure you want to cancel this transaction? All progress will be lost and you will return to invoice selection.',
+        message: 'Are you sure you want to cancel this transaction? All progress will be lost and you will return to employee selection.',
         header: 'Cancel Transaction',
         icon: 'pi pi-times-circle',
         acceptClass: 'p-button-danger',
         accept: () => {
-            packingStore.changeInvoice();
+            packingStore.reset();
         }
     });
 };
@@ -104,25 +104,25 @@ const confirmCancelTransaction = () => {
     <div class="flex flex-col gap-4 h-full">
         <!-- Header Info -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card class="bg-blue-50">
+            <Card class="bg-blue-50 dark:bg-blue-900/20">
                 <template #content>
-                    <div class="text-sm text-gray-600 mb-1">Invoice No</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Invoice No</div>
                     <div class="flex justify-between items-center">
-                        <div class="text-xl font-bold text-blue-700">{{ packingStore.invoice?.receipt_number }}</div>
+                        <div class="text-xl font-bold text-blue-700 dark:text-blue-300">{{ packingStore.invoice?.receipt_number }}</div>
                     </div>
                 </template>
             </Card>
-            <Card class="bg-blue-50">
+            <Card class="bg-blue-50 dark:bg-blue-900/20">
                 <template #content>
-                    <div class="text-sm text-gray-600">Customer</div>
-                    <div class="text-xl font-bold text-blue-700">{{ packingStore.invoice?.customer_name }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Customer</div>
+                    <div class="text-xl font-bold text-blue-700 dark:text-blue-300">{{ packingStore.invoice?.customer_name }}</div>
                 </template>
             </Card>
-            <Card :class="packingStore.isComplete ? 'bg-green-100' : 'bg-yellow-50'">
+            <Card :class="packingStore.isComplete ? 'bg-green-100 dark:bg-green-900/20' : 'bg-yellow-50 dark:bg-yellow-900/20'">
                 <template #content>
-                    <div class="text-sm text-gray-600">Progress</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Progress</div>
                     <div class="flex items-center gap-2">
-                        <div class="text-2xl font-bold" :class="packingStore.isComplete ? 'text-green-700' : 'text-yellow-700'">
+                        <div class="text-2xl font-bold" :class="packingStore.isComplete ? 'text-green-700 dark:text-green-300' : 'text-yellow-700 dark:text-yellow-300'">
                             {{ packingStore.totalScanned }} / {{ packingStore.totalTarget }}
                         </div>
                         <Tag :severity="packingStore.isComplete ? 'success' : 'warn'" :value="packingStore.isComplete ? 'Complete' : 'Pending'" />
@@ -185,21 +185,33 @@ const confirmCancelTransaction = () => {
                     <!-- Lists Grid -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
                         <!-- Target List -->
-                        <div class="border rounded-lg p-2 flex flex-col bg-gray-50">
-                            <h3 class="font-bold mb-2 px-2">Target Items</h3>
+                        <div class="border dark:border-gray-700 rounded-lg p-2 flex flex-col bg-gray-50 dark:bg-gray-800">
+                            <h3 class="font-bold mb-2 px-2 dark:text-white">Target Items</h3>
                             <div class="overflow-auto flex-1">
                                 <DataTable :value="packingStore.invoice?.items" size="small" stripedRows>
-                                    <Column field="product_name" header="Product"></Column>
-                                    <Column field="quantity" header="Qty" style="width: 3rem" class="text-center"></Column>
+                                    <Column field="product_name" header="Product">
+                                        <template #body="slotProps">
+                                            <span :class="{ 'text-gray-400 dark:text-gray-500': slotProps.data.is_serial_number !== 1 }">
+                                                {{ slotProps.data.product_name }}
+                                            </span>
+                                        </template>
+                                    </Column>
+                                    <Column field="quantity" header="Qty" style="width: 3rem" class="text-center">
+                                        <template #body="slotProps">
+                                            <span :class="{ 'text-gray-400 dark:text-gray-500': slotProps.data.is_serial_number !== 1 }">
+                                                {{ slotProps.data.quantity }}
+                                            </span>
+                                        </template>
+                                    </Column>
                                 </DataTable>
                             </div>
                         </div>
 
                         <!-- Scanned List -->
-                        <div class="border rounded-lg p-2 flex flex-col bg-white">
-                            <h3 class="font-bold mb-2 px-2 flex justify-between">
+                        <div class="border dark:border-gray-700 rounded-lg p-2 flex flex-col bg-white dark:bg-gray-900">
+                            <h3 class="font-bold mb-2 px-2 flex justify-between dark:text-white">
                                 <span>Scanned Items</span>
-                                <span class="text-sm font-normal text-gray-500">Latest on top</span>
+                                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Latest on top</span>
                             </h3>
                             <div class="overflow-auto flex-1">
                                 <DataTable :value="[...packingStore.scannedSerials].reverse()" size="small" stripedRows>

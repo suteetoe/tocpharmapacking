@@ -110,11 +110,6 @@ const toggleUserMenu = (event: Event) => {
         <div class="flex items-center gap-4">
           <Button :icon="isDark ? 'pi pi-moon' : 'pi pi-sun'" text rounded @click="toggleDarkMode" aria-label="Toggle Dark Mode" class="dark:text-white" />
           
-          <div class="flex items-center gap-2 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-medium">
-            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-            Online
-          </div>
-          
           <div class="flex items-center gap-3 cursor-pointer" @click="toggleUserMenu" aria-haspopup="true" aria-controls="overlay_menu">
             <div class="text-right hidden md:block">
               <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ authStore.user?.username || 'User' }}</div>
