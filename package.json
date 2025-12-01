@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build --outDir dist/tocpacking",
+    "build": "vue-tsc -b && vite build --assetsDir=tocpacking/assets",
     "preview": "vite preview",
     "test": "vitest"
   },

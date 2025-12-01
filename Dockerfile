@@ -11,5 +11,4 @@ FROM node:20-alpine as production-stage
 WORKDIR /app
 RUN npm install -g serve
 COPY --from=build-stage /app/dist ./dist
-COPY --from=build-stage /app/serve.json ./dist/serve.json
 CMD ["serve", "-s", "dist"]

@@ -1,5 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/tocpacking/**", "destination": "/tocpacking/index.html" }
-  ]
-}
