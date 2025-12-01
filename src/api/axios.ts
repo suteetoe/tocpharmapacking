@@ -25,7 +25,9 @@ export const setupInterceptors = (store: any) => {
     (response) => response,
     (error) => {
       if (error.response && error.response.status === 401) {
-        store.logout();
+        if (!error.config.url.includes('/auth/login')) {
+          store.logout();
+        }
       }
       return Promise.reject(error);
     }
