@@ -68,7 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
   function logout() {
     clearAuth();
     // Router redirection should be handled by the component calling logout or a global guard
-    window.location.href = '/login'; 
+    window.location.href = `${import.meta.env.BASE_URL}login`;
   }
 
   return {

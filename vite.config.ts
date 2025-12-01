@@ -5,6 +5,7 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/tocpacking/',
   plugins: [
     vue(),
     VueDevTools(),
