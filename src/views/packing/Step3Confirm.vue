@@ -36,7 +36,7 @@ const handleNew = () => {
 <template>
     <div class="flex flex-col gap-6 max-w-4xl mx-auto">
         <Card>
-            <template #title>Step 3: Confirmation</template>
+            <template #title>ขั้นตอนที่ 3: ยืนยัน</template>
             <template #content>
                 <div v-if="packingStore.successMessage" class="flex flex-col items-center gap-6 py-10">
                     <i class="pi pi-check-circle text-green-500 text-6xl"></i>

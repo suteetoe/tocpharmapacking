@@ -11,20 +11,20 @@ const packingStore = usePackingStore();
 
 const items = ref([
     {
-        label: 'Setup',
+        label: 'ตรวจสอบข้อมูล',
         command: () => {
             // Prevent jumping ahead
             if (packingStore.currentStep > 1) packingStore.currentStep = 1;
         }
     },
     {
-        label: 'Scanning',
+        label: 'สแกนสินค้า',
         command: () => {
              if (packingStore.currentStep > 2) packingStore.currentStep = 2;
         }
     },
     {
-        label: 'Confirmation',
+        label: 'ยืนยัน',
         command: () => {
             // Cannot jump to confirm without finishing scan
         }

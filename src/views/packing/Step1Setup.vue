@@ -27,16 +27,16 @@ const handleInvoiceSubmit = async () => {
 <template>
     <div class="flex flex-col gap-6 max-w-2xl mx-auto">
         <Card>
-            <template #title>Step 1: Setup</template>
+            <template #title>ขั้นตอนที่ 1: ตรวจสอบข้อมูล</template>
             <template #content>
                 <div class="flex flex-col gap-6">
                     <!-- Employee Section -->
                     <div class="flex flex-col gap-2">
-                        <label class="font-bold">Employee Code</label>
+                        <label class="font-bold">พนักงาน</label>
                         <div class="flex gap-2">
                             <InputText 
                                 v-model="employeeCode" 
-                                placeholder="Scan Employee ID (e.g. EMP001)" 
+                                placeholder="สแกนรหัสพนักงาน (เช่น EMP001)" 
                                 class="flex-1" 
                                 :disabled="!!packingStore.employee"
                                 @keyup.enter="handleEmployeeSubmit"
@@ -55,11 +55,11 @@ const handleInvoiceSubmit = async () => {
 
                     <!-- Invoice Section (Only shows after employee is verified) -->
                     <div v-if="packingStore.employee" class="flex flex-col gap-2 border-t pt-4">
-                        <label class="font-bold">Invoice Number</label>
+                        <label class="font-bold">หมายเลขใบเสร็จ</label>
                         <div class="flex gap-2">
                             <InputText 
                                 v-model="invoiceNo" 
-                                placeholder="Scan Invoice No (e.g. INV001)" 
+                                placeholder="สแกนหมายเลขใบเสร็จ (เช่น INV001)" 
                                 class="flex-1" 
                                 @keyup.enter="handleInvoiceSubmit"
                             />

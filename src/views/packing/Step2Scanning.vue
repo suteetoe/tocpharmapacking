@@ -76,8 +76,8 @@ const finishPacking = () => {
 
 const confirmReset = () => {
     confirm.require({
-        message: 'Are you sure you want to clear all scanned items?',
-        header: 'Confirm Reset',
+        message: 'คุณแน่ใจหรือไม่ว่าต้องการล้างรายการที่สแกนทั้งหมด?',
+        header: 'ยืนยันการรีเซ็ต',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'p-button-danger',
         accept: () => {
@@ -89,8 +89,8 @@ const confirmReset = () => {
 
 const confirmCancelTransaction = () => {
     confirm.require({
-        message: 'Are you sure you want to cancel this transaction? All progress will be lost and you will return to employee selection.',
-        header: 'Cancel Transaction',
+        message: 'คุณแน่ใจหรือไม่ว่าต้องการยกเลิกรายการนี้? ความคืบหน้าทั้งหมดจะหายไปและคุณจะกลับไปที่หน้าเลือกพนักงาน',
+        header: 'ยกเลิกรายการ',
         icon: 'pi pi-times-circle',
         acceptClass: 'p-button-danger',
         accept: () => {
@@ -106,7 +106,7 @@ const confirmCancelTransaction = () => {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card class="bg-blue-50 dark:bg-blue-900/20">
                 <template #content>
-                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Invoice No</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">หมายเลขใบเสร็จ</div>
                     <div class="flex justify-between items-center">
                         <div class="text-xl font-bold text-blue-700 dark:text-blue-300">{{ packingStore.invoice?.receipt_number }}</div>
                     </div>
@@ -114,18 +114,18 @@ const confirmCancelTransaction = () => {
             </Card>
             <Card class="bg-blue-50 dark:bg-blue-900/20">
                 <template #content>
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Customer</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">ลูกค้า</div>
                     <div class="text-xl font-bold text-blue-700 dark:text-blue-300">{{ packingStore.invoice?.customer_name }}</div>
                 </template>
             </Card>
             <Card :class="packingStore.isComplete ? 'bg-green-100 dark:bg-green-900/20' : 'bg-yellow-50 dark:bg-yellow-900/20'">
                 <template #content>
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Progress</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">ความคืบหน้า</div>
                     <div class="flex items-center gap-2">
                         <div class="text-2xl font-bold" :class="packingStore.isComplete ? 'text-green-700 dark:text-green-300' : 'text-yellow-700 dark:text-yellow-300'">
                             {{ packingStore.totalScanned }} / {{ packingStore.totalTarget }}
                         </div>
-                        <Tag :severity="packingStore.isComplete ? 'success' : 'warn'" :value="packingStore.isComplete ? 'Complete' : 'Pending'" />
+                        <Tag :severity="packingStore.isComplete ? 'success' : 'warn'" :value="packingStore.isComplete ? 'เสร็จสิ้น' : 'รอดำเนินการ'" />
                     </div>
                 </template>
             </Card>
@@ -135,17 +135,17 @@ const confirmCancelTransaction = () => {
         <Card class="flex-1 flex flex-col">
             <template #title>
                 <div class="flex justify-between items-center">
-                    <span>Scanning Operation</span>
+                    <span>ดำเนินการสแกนสินค้า</span>
                     <div class="flex gap-2">
                         <Button 
-                            label="Cancel" 
+                            label="ยกเลิก" 
                             icon="pi pi-times" 
                             severity="secondary" 
                             outlined
                             @click="confirmCancelTransaction"
                         />
                         <Button 
-                            label="Reset" 
+                            label="รีเซ็ต" 
                             icon="pi pi-refresh" 
                             severity="danger" 
                             outlined
@@ -153,7 +153,7 @@ const confirmCancelTransaction = () => {
                             :disabled="packingStore.scannedSerials.length === 0"
                         />
                         <Button 
-                            label="Finish & Review" 
+                            label="เสร็จสิ้นและตรวจสอบ" 
                             icon="pi pi-check" 
                             severity="success" 
                             @click="finishPacking"
@@ -169,7 +169,7 @@ const confirmCancelTransaction = () => {
                         <InputText 
                             ref="inputRef"
                             v-model="serialInput" 
-                            placeholder="Scan Serial Number here..." 
+                            placeholder="สแกนหมายเลขซีเรียลที่นี่..." 
                             class="flex-1 text-lg p-3" 
                             autofocus
                             @keyup.enter="handleScan"
@@ -186,17 +186,17 @@ const confirmCancelTransaction = () => {
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
                         <!-- Target List -->
                         <div class="border dark:border-gray-700 rounded-lg p-2 flex flex-col bg-gray-50 dark:bg-gray-800">
-                            <h3 class="font-bold mb-2 px-2 dark:text-white">Target Items</h3>
+                            <h3 class="font-bold mb-2 px-2 dark:text-white">รายการสินค้าที่ต้องจัด</h3>
                             <div class="overflow-auto flex-1">
                                 <DataTable :value="packingStore.invoice?.items" size="small" stripedRows>
-                                    <Column field="product_name" header="Product">
+                                    <Column field="product_name" header="สินค้า">
                                         <template #body="slotProps">
                                             <span :class="{ 'text-gray-400 dark:text-gray-500': slotProps.data.is_serial_number !== 1 }">
                                                 {{ slotProps.data.product_name }}
                                             </span>
                                         </template>
                                     </Column>
-                                    <Column field="quantity" header="Qty" style="width: 3rem" class="text-center">
+                                    <Column field="quantity" header="จำนวน" style="width: 3rem" class="text-center">
                                         <template #body="slotProps">
                                             <span :class="{ 'text-gray-400 dark:text-gray-500': slotProps.data.is_serial_number !== 1 }">
                                                 {{ slotProps.data.quantity }}
@@ -210,12 +210,12 @@ const confirmCancelTransaction = () => {
                         <!-- Scanned List -->
                         <div class="border dark:border-gray-700 rounded-lg p-2 flex flex-col bg-white dark:bg-gray-900">
                             <h3 class="font-bold mb-2 px-2 flex justify-between dark:text-white">
-                                <span>Scanned Items</span>
-                                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Latest on top</span>
+                                <span>รายการที่สแกนแล้ว</span>
+                                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">ล่าสุดอยู่ด้านบน</span>
                             </h3>
                             <div class="overflow-auto flex-1">
                                 <DataTable :value="[...packingStore.scannedSerials].reverse()" size="small" stripedRows>
-                                    <Column header="Serial Number">
+                                    <Column header="หมายเลขซีเรียล">
                                         <template #body="slotProps">
                                             <span class="font-mono">{{ slotProps.data }}</span>
                                         </template>

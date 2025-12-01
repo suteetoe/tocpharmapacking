@@ -81,7 +81,7 @@ const toggleUserMenu = (event: Event) => {
               :class="{ 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300': route.path.startsWith('/packing') }"
             >
               <i class="pi pi-box text-lg"></i>
-              <span v-if="isSidebarOpen" class="ml-3 font-medium">Packing</span>
+              <span v-if="isSidebarOpen" class="ml-3 font-medium">จัดสินค้า</span>
             </router-link>
           </li>
         </ul>
