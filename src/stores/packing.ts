@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { Employee, InvoiceDetails, PackingConfirmationResponse, InvoiceApiResponse, SerialNumberData, SerialNumberResponse } from '../types';
 import api from '../api/axios';
+import { parseAIDataMatrix } from '../utils/barcode';
 
 export const usePackingStore = defineStore('packing', () => {
     // State
@@ -100,7 +101,17 @@ export const usePackingStore = defineStore('packing', () => {
         loading.value = true;
         error.value = null;
         try {
-            const response = await api.post<SerialNumberResponse>('/product/serial-number', { serial_number: serial });
+            let response;
+            const parsedBarcode = parseAIDataMatrix(serial);
+
+            if (parsedBarcode) {
+                response = await api.post<SerialNumberResponse>('/product/serial-by-ic-code', { 
+                    ic_code: parsedBarcode.ic_code, 
+                    serial_number: parsedBarcode.serial_number 
+                });
+            } else {
+                response = await api.post<SerialNumberResponse>('/product/serial-number', { serial_number: serial });
+            }
             
             if (response.data.success && response.data.data) {
                 const scannedData = response.data.data;
@@ -113,6 +124,15 @@ export const usePackingStore = defineStore('packing', () => {
 
                 if (invoiceItem.is_serial_number !== 1) {
                     throw new Error(`Product ${scannedData.ic_code} does not require serial number scanning.`);
+                }
+
+                // Check if this specific serial number has already been scanned (regardless of input format)
+                const isSerialAlreadyScanned = scannedItemsDetails.value.some(
+                    item => item.ic_code === scannedData.ic_code && item.serial_number === scannedData.serial_number
+                );
+
+                if (isSerialAlreadyScanned) {
+                     throw new Error(`Serial number ${scannedData.serial_number} for product ${scannedData.ic_code} has already been scanned.`);
                 }
 
                 // Check if this specific product has reached its required quantity
