@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePackingStore } from '../../stores/packing';
 import Button from 'primevue/button';
@@ -14,6 +14,8 @@ const loading = ref(true);
 
 onMounted(async () => {
     const invoiceNo = route.params.id as string;
+
+    console.log(invoiceNo)
     if (invoiceNo) {
         printData.value = await packingStore.getPackingPrintData(invoiceNo);
     }
@@ -27,6 +29,69 @@ const handlePrint = () => {
 const handleBack = () => {
     router.push('/packing');
 };
+
+// Transform data into rows for the slip
+const slipRows = computed(() => {
+    if (!printData.value) return [];
+    const rows: any[] = [];
+    let seq = 1;
+    for (const item of printData.value.details) {
+        const serials = printData.value.serialnumbers
+            .filter((serial: any) => serial.ic_code === item.item_code)
+            .map((serial: any) => serial.serial_number);
+        for (const serial of serials) {
+            rows.push({
+                itemCode: item.item_code,
+                itemName: item.item_name,
+                seq: seq++,
+                qty: 1,
+                serialNumber: serial
+            });
+        }
+    }
+    return rows;
+});
+
+// Format the packing slip as ASCII text with pagination
+const formattedSlip = computed(() => {
+    if (!printData.value) return [];
+    const ROWS_PER_PAGE = 20;
+    const pages: string[] = [];
+    const allRows = slipRows.value;
+
+    for (let pageIndex = 0; pageIndex < allRows.length; pageIndex += ROWS_PER_PAGE) {
+        const pageRows = allRows.slice(pageIndex, pageIndex + ROWS_PER_PAGE);
+        const lines: string[] = [];
+        const totalPages = Math.ceil(allRows.length / ROWS_PER_PAGE);
+        const currentPage = Math.floor(pageIndex / ROWS_PER_PAGE) + 1;
+
+        // Page header
+        lines.push(''.padEnd(75, ' ') + `PAGE : ${currentPage}/${totalPages}`);
+        lines.push('');
+        lines.push('                             SERIAL NUMBER RECORD');
+        lines.push('                  ****************************************');
+        lines.push('');
+        lines.push(`                  INV.      : ${printData.value.doc_no}`);
+        lines.push(`                  DATE      : ${printData.value.doc_date ? new Date(printData.value.doc_date).toLocaleDateString() : ''}`);
+        lines.push('--------------------------------------------------------------------------------');
+        lines.push('Item Code       Item Name           Seq     Qty     Serial Number    '.padEnd(80, ' '));
+        lines.push('--------------------------------------------------------------------------------');
+
+        // Rows
+        for (const row of pageRows) {
+            const itemCode = row.itemCode.padEnd(16, ' ');
+            const itemName = row.itemName.padEnd(20, ' ');
+            const seq = row.seq.toString().padEnd(8, ' ');
+            const qty = row.qty.toString().padEnd(8, ' ');
+            const serial = row.serialNumber.padEnd(14, ' ');
+            lines.push(`${itemCode}${itemName}${seq}${qty}${serial}`.padEnd(80, ' '));
+        }
+
+        pages.push(lines.join('\n'));
+    }
+
+    return pages;
+});
 </script>
 
 <template>
@@ -34,69 +99,15 @@ const handleBack = () => {
         <!-- Toolbar (Hidden on Print) -->
         <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center print:hidden">
             <Button label="Back to Packing" icon="pi pi-arrow-left" text @click="handleBack" />
-            <Button label="Print Packing Slip" icon="pi pi-print" @click="handlePrint" />
+            <div class="flex gap-2">
+                <Button label="Print Packing Slip" icon="pi pi-print" @click="handlePrint" />
+            </div>
         </div>
 
         <!-- Print Content -->
-        <div v-if="printData" class="max-w-4xl mx-auto bg-white shadow-lg p-8 print:shadow-none print:max-w-none">
-            <!-- Header -->
-            <div class="flex justify-between items-start border-b pb-6 mb-6">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-800">PACKING SLIP</h1>
-                    <div class="text-gray-500 mt-2">TOC Pharma Co., Ltd.</div>
-                    <div class="text-sm text-gray-500">123 Pharma Road, Bangkok, Thailand</div>
-                </div>
-                <div class="text-right">
-                    <div class="text-xl font-bold text-gray-700">#{{ printData.invoice_no }}</div>
-                    <div class="text-gray-500">Date: {{ printData.date }}</div>
-                </div>
-            </div>
-
-            <!-- Info -->
-            <div class="grid grid-cols-2 gap-8 mb-8">
-                <div>
-                    <h3 class="text-gray-500 font-bold uppercase text-xs tracking-wider mb-1">Ship To</h3>
-                    <div class="font-bold text-lg">{{ printData.customer_name }}</div>
-                </div>
-                <div class="text-right">
-                    <h3 class="text-gray-500 font-bold uppercase text-xs tracking-wider mb-1">Packed By</h3>
-                    <div class="font-bold">{{ printData.packer }}</div>
-                </div>
-            </div>
-
-            <!-- Items -->
-            <div class="mb-8">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b-2 border-gray-200">
-                            <th class="py-3 font-bold text-gray-600">Product</th>
-                            <th class="py-3 font-bold text-gray-600 text-center">Qty</th>
-                            <th class="py-3 font-bold text-gray-600">Serials</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="item in printData.items" :key="item.product_id" class="border-b border-gray-100">
-                            <td class="py-4 align-top">
-                                <div class="font-bold">{{ item.product_name }}</div>
-                                <div class="text-xs text-gray-400">ID: {{ item.product_id }}</div>
-                            </td>
-                            <td class="py-4 align-top text-center font-bold">{{ item.quantity }}</td>
-                            <td class="py-4 align-top">
-                                <div class="flex flex-wrap gap-1">
-                                    <span v-for="serial in item.serials" :key="serial" class="text-xs font-mono bg-gray-100 px-1 rounded">
-                                        {{ serial }}
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Footer -->
-            <div class="border-t pt-8 mt-12 text-center text-gray-500 text-sm">
-                <p>Thank you for your business.</p>
-                <p class="mt-2">If you have any questions about this shipment, please contact support@tocpharma.com</p>
+        <div v-if="printData" class="max-w-4xl mx-auto bg-white shadow-lg p-8 print:shadow-none print:max-w-none print:p-0">
+            <div v-for="(page, index) in formattedSlip" :key="index" class="page-break">
+                <pre class="font-mono text-sm leading-tight whitespace-pre-wrap">{{ page }}</pre>
             </div>
         </div>
 
@@ -108,13 +119,20 @@ const handleBack = () => {
 </template>
 
 <style>
+.page-break {
+    page-break-after: always;
+}
+
 @media print {
     @page {
-        margin: 0;
-        size: auto;
+        margin: 10mm;
+        size: A4;
     }
     body {
         background: white;
+    }
+    .page-break:last-child {
+        page-break-after: avoid;
     }
 }
 </style>
