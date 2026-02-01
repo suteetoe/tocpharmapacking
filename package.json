@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:production": "vite --mode production",
     "build": "vue-tsc -b && vite build --assetsDir=tocpacking/assets",
     "preview": "vite preview",
     "test": "vitest"
