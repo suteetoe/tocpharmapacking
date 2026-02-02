@@ -70,22 +70,22 @@ const formattedSlip = computed(() => {
         lines.push('                  ****************************************');
         lines.push('');
         lines.push(`                  INV.      : ${printData.value.doc_no}`);
-        lines.push(`                  DATE      : ${printData.value.doc_date ? new Date(printData.value.doc_date).toLocaleDateString() : ''}`);
+        lines.push(`                  DATE      : ${printData.value.doc_date ? new Date(printData.value.doc_date).toLocaleDateString('en-GB') : ''}`);
         // แสดงข้อมูลพนักงานผู้จัดสินค้า
         if (printData.value.packer) {
             const packerInfo = `${printData.value.packer.user_code}${printData.value.packer.user_name ? ` (${printData.value.packer.user_name})` : ''}`;
             lines.push(`                  PACKER    : ${packerInfo}`);
         }
         lines.push('--------------------------------------------------------------------------------');
-        lines.push('Item Code       Item Name                          Qty     Serial Number    '.padEnd(80, ' '));
+        lines.push('Item Code         Item Name                            Qty       Serial Number      '.padEnd(80, ' '));
         lines.push('--------------------------------------------------------------------------------');
 
         // Rows
         for (const row of pageRows) {
-            const itemCode = row.itemCode.padEnd(16, ' ');
-            const itemName = row.itemName.padEnd(35, ' ');
-            const qty = row.qty.toString().padEnd(8, ' ');
-            const serial = row.serialNumber.padEnd(20, ' ');
+            const itemCode = row.itemCode.padEnd(18, ' ');
+            const itemName = row.itemName.padEnd(38, ' ');
+            const qty = row.qty.toString().padEnd(10, ' ');
+            const serial = row.serialNumber.padEnd(22, ' ');
             lines.push(`${itemCode}${itemName}${qty}${serial}`.padEnd(80, ' '));
         }
 
@@ -109,7 +109,7 @@ const formattedSlip = computed(() => {
         <!-- Print Content -->
         <div v-if="printData" class="max-w-4xl mx-auto bg-white shadow-lg p-8 print:shadow-none print:max-w-none print:p-0">
             <div v-for="(page, index) in formattedSlip" :key="index" class="page-break">
-                <pre class="font-mono text-sm leading-tight whitespace-pre-wrap">{{ page }}</pre>
+                <pre class="font-mono text-xs leading-tight whitespace-pre-wrap">{{ page }}</pre>
             </div>
         </div>
 

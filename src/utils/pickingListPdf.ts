@@ -37,10 +37,10 @@ export function generatePickingListPdf(
     deliveredBy = ''
   } = options;
 
-  const currentDate = new Date().toLocaleDateString('th-TH', {
+  const currentDate = new Date().toLocaleDateString('en-GB', {
     year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+    month: '2-digit',
+    day: '2-digit'
   });
 
   const content: Content[] = [];
@@ -83,45 +83,45 @@ export function generatePickingListPdf(
     pageMargins: [40, 40, 40, 60],
     defaultStyle: {
       font: THAI_FONT,
-      fontSize: 10
+      fontSize: 9
     },
     styles: {
       header: {
-        fontSize: 18,
+        fontSize: 16,
         bold: true,
         alignment: 'center',
         margin: [0, 0, 0, 10]
       },
       subheader: {
-        fontSize: 12,
+        fontSize: 10,
         bold: true,
         margin: [0, 10, 0, 5]
       },
       orderInfo: {
-        fontSize: 10,
+        fontSize: 9,
         margin: [0, 2, 0, 2]
       },
       tableHeader: {
-        fontSize: 10,
+        fontSize: 9,
         bold: true,
         alignment: 'center',
         fillColor: '#f0f0f0'
       },
       tableCell: {
-        fontSize: 9,
+        fontSize: 8,
         margin: [2, 2, 2, 2]
       },
       serialNumber: {
-        fontSize: 8,
+        fontSize: 7,
         color: '#333333'
       },
       summary: {
-        fontSize: 10,
+        fontSize: 9,
         bold: true,
         margin: [0, 10, 0, 5]
       },
       signature: {
-        fontSize: 10,
+        fontSize: 9,
         alignment: 'center'
       },
       signatureLine: {
@@ -145,8 +145,12 @@ export function generatePickingListPdf(
  * Generate order header section
  */
 function generateOrderHeader(order: PickingListOrder, title: string, currentDate: string): Content[] {
-  const orderDate = order.orderDate 
-    ? new Date(order.orderDate).toLocaleDateString('th-TH')
+  const orderDate = order.orderDate
+    ? new Date(order.orderDate).toLocaleDateString('en-GB', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
     : currentDate;
 
   // Build employee info text
@@ -289,10 +293,10 @@ function generateItemsTable(items: PickingListItem[]): Content {
       vLineWidth: () => 0.5,
       hLineColor: () => '#cccccc',
       vLineColor: () => '#cccccc',
-      paddingLeft: () => 4,
-      paddingRight: () => 4,
-      paddingTop: () => 4,
-      paddingBottom: () => 4
+      paddingLeft: () => 8,
+      paddingRight: () => 8,
+      paddingTop: () => 6,
+      paddingBottom: () => 6
     },
     margin: [0, 0, 0, 15]
   };
