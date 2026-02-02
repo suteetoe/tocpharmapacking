@@ -85,6 +85,8 @@ const handleBack = () => {
 const handleNew = () => {
     packingStore.reset();
 };
+
+
 </script>
 
 <template>

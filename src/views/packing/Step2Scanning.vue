@@ -16,6 +16,8 @@ const confirm = useConfirm();
 const serialInput = ref('');
 const inputRef = ref();
 
+
+
 // Focus input on mount and keep focus
 const focusInput = () => {
     nextTick(() => {

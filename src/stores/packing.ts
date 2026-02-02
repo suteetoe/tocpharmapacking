@@ -88,8 +88,12 @@ export const usePackingStore = defineStore('packing', () => {
     }
 
     async function scanProduct(serial: string) {
-        if (scannedSerials.value.includes(serial)) {
-            error.value = `Serial ${serial} already scanned.`;
+        // Parse AI Matrix if present to get the actual serial number for storage
+        const parsedBarcode = parseAIDataMatrix(serial);
+        const serialToStore = parsedBarcode ? parsedBarcode.serial_number : serial;
+
+        if (scannedSerials.value.includes(serialToStore)) {
+            error.value = `Serial ${serialToStore} already scanned.`;
             return false;
         }
         
@@ -102,7 +106,6 @@ export const usePackingStore = defineStore('packing', () => {
         error.value = null;
         try {
             let response;
-            const parsedBarcode = parseAIDataMatrix(serial);
 
             if (parsedBarcode) {
                 response = await api.post<SerialNumberResponse>('/product/serial-by-ic-code', { 
@@ -148,7 +151,8 @@ export const usePackingStore = defineStore('packing', () => {
                     throw new Error(`Product ${scannedData.ic_code} is already fully scanned (${currentScannedForProduct}/${totalRequiredForProduct}).`);
                 }
 
-                scannedSerials.value.push(serial);
+                // Store the extracted serial number (not the raw AI Matrix)
+                scannedSerials.value.push(serialToStore);
                 scannedItemsDetails.value.push(scannedData);
                 return true;
             } else {
