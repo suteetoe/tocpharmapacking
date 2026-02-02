@@ -67,7 +67,9 @@ const handlePrintPickingList = () => {
         items: items,
         totalItems: items.length,
         totalQuantity: items.reduce((sum, item) => sum + item.quantity, 0),
-        isComplete: true
+        isComplete: true,
+        employeeCode: packingStore.employee?.code || '',
+        employeeName: packingStore.employee?.name || ''
     };
 
     const docDefinition = generatePickingListPdf([order], {

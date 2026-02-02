@@ -34,7 +34,6 @@ const handleBack = () => {
 const slipRows = computed(() => {
     if (!printData.value) return [];
     const rows: any[] = [];
-    let seq = 1;
     for (const item of printData.value.details) {
         const serials = printData.value.serialnumbers
             .filter((serial: any) => serial.ic_code === item.item_code)
@@ -43,7 +42,6 @@ const slipRows = computed(() => {
             rows.push({
                 itemCode: item.item_code,
                 itemName: item.item_name,
-                seq: seq++,
                 qty: 1,
                 serialNumber: serial
             });
@@ -73,18 +71,22 @@ const formattedSlip = computed(() => {
         lines.push('');
         lines.push(`                  INV.      : ${printData.value.doc_no}`);
         lines.push(`                  DATE      : ${printData.value.doc_date ? new Date(printData.value.doc_date).toLocaleDateString() : ''}`);
+        // แสดงข้อมูลพนักงานผู้จัดสินค้า
+        if (printData.value.packer) {
+            const packerInfo = `${printData.value.packer.user_code}${printData.value.packer.user_name ? ` (${printData.value.packer.user_name})` : ''}`;
+            lines.push(`                  PACKER    : ${packerInfo}`);
+        }
         lines.push('--------------------------------------------------------------------------------');
-        lines.push('Item Code       Item Name           Seq     Qty     Serial Number    '.padEnd(80, ' '));
+        lines.push('Item Code       Item Name                          Qty     Serial Number    '.padEnd(80, ' '));
         lines.push('--------------------------------------------------------------------------------');
 
         // Rows
         for (const row of pageRows) {
             const itemCode = row.itemCode.padEnd(16, ' ');
-            const itemName = row.itemName.padEnd(20, ' ');
-            const seq = row.seq.toString().padEnd(8, ' ');
+            const itemName = row.itemName.padEnd(35, ' ');
             const qty = row.qty.toString().padEnd(8, ' ');
-            const serial = row.serialNumber.padEnd(14, ' ');
-            lines.push(`${itemCode}${itemName}${seq}${qty}${serial}`.padEnd(80, ' '));
+            const serial = row.serialNumber.padEnd(20, ' ');
+            lines.push(`${itemCode}${itemName}${qty}${serial}`.padEnd(80, ' '));
         }
 
         pages.push(lines.join('\n'));

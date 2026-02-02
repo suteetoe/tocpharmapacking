@@ -149,6 +149,11 @@ function generateOrderHeader(order: PickingListOrder, title: string, currentDate
     ? new Date(order.orderDate).toLocaleDateString('th-TH')
     : currentDate;
 
+  // Build employee info text
+  const employeeInfo = order.employeeCode || order.employeeName
+    ? `${order.employeeCode || ''} ${order.employeeName ? `(${order.employeeName})` : ''}`
+    : '-';
+
   return [
     {
       text: title,
@@ -202,6 +207,17 @@ function generateOrderHeader(order: PickingListOrder, title: string, currentDate
               colSpan: 2
             },
             ''
+          ],
+          [
+            {
+              text: [
+                { text: 'ผู้จัดของ: ', bold: true },
+                employeeInfo
+              ],
+              style: 'orderInfo',
+              colSpan: 2
+            },
+            ''
           ]
         ]
       },
@@ -232,7 +248,6 @@ function generateItemsTable(items: PickingListItem[]): Content {
   const tableBody: TableCell[][] = [
     // Header row
     [
-      { text: 'ลำดับ', style: 'tableHeader', alignment: 'center' },
       { text: 'SKU', style: 'tableHeader', alignment: 'center' },
       { text: 'ชื่อสินค้า', style: 'tableHeader', alignment: 'center' },
       { text: 'จำนวน', style: 'tableHeader', alignment: 'center' },
@@ -243,13 +258,12 @@ function generateItemsTable(items: PickingListItem[]): Content {
   ];
 
   // Data rows
-  items.forEach((item, index) => {
+  items.forEach((item) => {
     const serialNumbersText = item.serialNumbers.length > 0
       ? item.serialNumbers.join('\n')
       : '-';
 
     tableBody.push([
-      { text: (index + 1).toString(), alignment: 'center', style: 'tableCell' },
       { text: item.sku, style: 'tableCell' },
       { text: item.productName, style: 'tableCell' },
       { text: item.quantity.toString(), alignment: 'center', style: 'tableCell' },
@@ -262,7 +276,7 @@ function generateItemsTable(items: PickingListItem[]): Content {
   return {
     table: {
       headerRows: 1,
-      widths: ['6%', '14%', '20%', '8%', '28%', '12%', '12%'],
+      widths: ['15%', '22%', '8%', '30%', '12%', '13%'],
       body: tableBody
     },
     layout: {

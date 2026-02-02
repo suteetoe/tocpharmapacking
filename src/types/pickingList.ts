@@ -19,6 +19,8 @@ export interface PickingListOrder {
   totalItems: number;
   totalQuantity: number;
   isComplete: boolean; // บันทึก serial number ครบถ้วนแล้ว
+  employeeCode?: string; // รหัสพนักงานที่ทำการจัดของ
+  employeeName?: string; // ชื่อพนักงานที่ทำการจัดของ
 }
 
 export interface PickingListData {
