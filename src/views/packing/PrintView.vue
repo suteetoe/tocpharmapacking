@@ -53,7 +53,7 @@ const slipRows = computed(() => {
 // Format the packing slip as ASCII text with pagination
 const formattedSlip = computed(() => {
     if (!printData.value) return [];
-    const ROWS_PER_PAGE = 20;
+    const ROWS_PER_PAGE = 55;
     const pages: string[] = [];
     const allRows = slipRows.value;
 
