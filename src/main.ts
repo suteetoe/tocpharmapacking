@@ -9,6 +9,7 @@ import router from './router'
 import { useAuthStore } from './stores/auth'
 import { setupInterceptors } from './api/axios'
 import ConfirmationService from 'primevue/confirmationservice';
+import ToastService from 'primevue/toastservice';
 
 const app = createApp(App)
 
@@ -23,6 +24,7 @@ app.use(PrimeVue, {
     }
 })
 app.use(ConfirmationService);
+app.use(ToastService);
 
 const authStore = useAuthStore()
 setupInterceptors(authStore)

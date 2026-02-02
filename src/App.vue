@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
-
-const route = useRoute();
-const layout = computed(() => route.meta.layout || 'div');
+import { RouterView } from 'vue-router';
+import Toast from 'primevue/toast';
 </script>
 
 <template>
-  <component :is="layout">
-    <router-view />
+  <Toast />
+  <component :is="$route.meta.layout || 'div'">
+    <RouterView />
   </component>
 </template>
+
+<style scoped>
+</style>

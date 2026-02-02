@@ -6,6 +6,8 @@ import Card from 'primevue/card';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Message from 'primevue/message';
+import { generatePickingListPdf, printPdf } from '../../utils/pickingListPdf';
+import type { PickingListOrder, PickingListItem } from '../../types/pickingList';
 
 const packingStore = usePackingStore();
 const router = useRouter();
@@ -22,6 +24,58 @@ const handlePrint = () => {
     if (packingStore.invoice?.receipt_number) {
         router.push({ name: 'PrintPacking', params: { id: packingStore.invoice.receipt_number } });
     }
+};
+
+const handlePrintPickingList = () => {
+    if (!packingStore.invoice || !packingStore.scannedItemsDetails.length) return;
+
+    // Group scanned items by product
+    const itemMap = new Map<string, PickingListItem>();
+
+    packingStore.scannedItemsDetails.forEach((detail) => {
+        const serial = detail.serial_number;
+        const sku = detail.ic_code;
+
+        // Find product name from invoice items
+        const invoiceItem = packingStore.invoice?.items.find(item => item.product_id === sku);
+        const productName = invoiceItem?.product_name || sku;
+
+        if (itemMap.has(sku)) {
+            const existing = itemMap.get(sku)!;
+            existing.quantity += 1;
+            existing.serialNumbers.push(serial);
+        } else {
+            itemMap.set(sku, {
+                sku: sku,
+                productName: productName,
+                quantity: 1,
+                serialNumbers: [serial],
+                location: detail.shelf_code || '-',
+                notes: ''
+            });
+        }
+    });
+
+    const items = Array.from(itemMap.values());
+
+    const order: PickingListOrder = {
+        orderId: packingStore.invoice.receipt_number,
+        orderNumber: packingStore.invoice.receipt_number,
+        customerName: packingStore.invoice.customer_name,
+        customerCode: packingStore.invoice.cust_code,
+        orderDate: new Date().toISOString(),
+        items: items,
+        totalItems: items.length,
+        totalQuantity: items.reduce((sum, item) => sum + item.quantity, 0),
+        isComplete: true
+    };
+
+    const docDefinition = generatePickingListPdf([order], {
+        preparedBy: packingStore.employee?.name || '',
+        checkedBy: '',
+        deliveredBy: ''
+    });
+    printPdf(docDefinition);
 };
 
 const handleBack = () => {
@@ -41,8 +95,9 @@ const handleNew = () => {
                 <div v-if="packingStore.successMessage" class="flex flex-col items-center gap-6 py-10">
                     <i class="pi pi-check-circle text-green-500 text-6xl"></i>
                     <h2 class="text-2xl font-bold text-green-700">{{ packingStore.successMessage }}</h2>
-                    <div class="flex gap-4">
+                    <div class="flex gap-4 flex-wrap justify-center">
                         <Button label="Print Packing Slip" icon="pi pi-print" severity="secondary" @click="handlePrint" size="large" />
+                        <Button label="Print Picking List" icon="pi pi-file-pdf" severity="info" @click="handlePrintPickingList" size="large" />
                         <Button label="Start New Packing" @click="handleNew" size="large" />
                     </div>
                 </div>
