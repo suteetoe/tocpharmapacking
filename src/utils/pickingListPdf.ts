@@ -10,7 +10,7 @@ import { vfsFontsTh, fontFamilyTh } from '../assets/fonts/vfs_fonts_th';
 if (!(pdfMake as any).fonts) {
   (pdfMake as any).fonts = {};
 }
-Object.assign((pdfMake as any).fonts, fontFamilyTh);
+//Object.assign((pdfMake as any).fonts, fontFamilyTh);
 
 // Thai font support - using Sarabun font
 const THAI_FONT = 'Sarabun';
@@ -18,6 +18,7 @@ const THAI_FONT = 'Sarabun';
 // Debug: Log vfs and fonts
 console.log('pdfMake vfs keys:', Object.keys(vfsFontsTh));
 console.log('pdfMake fonts:', (pdfMake as any).fonts);
+pdfMake.addFonts(fontFamilyTh);
 
 /**
  * Generate Picking List PDF (ใบจัดสินค้า)

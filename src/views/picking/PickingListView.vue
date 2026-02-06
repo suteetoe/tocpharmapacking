@@ -260,8 +260,8 @@ const downloadBatchPickingList = async () => {
 // Initialize default dates to current month
 const initializeDefaultDates = () => {
   const now = new Date();
-  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   
   filters.value.dateFrom = firstDayOfMonth;
   filters.value.dateTo = lastDayOfMonth;

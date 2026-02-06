@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { usePackingStore } from '../../stores/packing';
-import { useRouter } from 'vue-router';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import DataTable from 'primevue/datatable';
@@ -10,7 +9,6 @@ import { generatePickingListPdf, printPdf } from '../../utils/pickingListPdf';
 import type { PickingListOrder, PickingListItem } from '../../types/pickingList';
 
 const packingStore = usePackingStore();
-const router = useRouter();
 
 const handleConfirm = async () => {
     const success = await packingStore.confirmPacking();
@@ -22,7 +20,7 @@ const handleConfirm = async () => {
 
 const handlePrint = () => {
     if (packingStore.invoice?.receipt_number) {
-        router.push({ name: 'PrintPacking', params: { id: packingStore.invoice.receipt_number } });
+        packingStore.downloadPackingPdf(packingStore.invoice.receipt_number);
     }
 };
 
@@ -100,7 +98,7 @@ const handleNew = () => {
                     <i class="pi pi-check-circle text-green-500 text-6xl"></i>
                     <h2 class="text-2xl font-bold text-green-700">{{ packingStore.successMessage }}</h2>
                     <div class="flex gap-4 flex-wrap justify-center">
-                        <Button label="Print Packing Slip" icon="pi pi-print" severity="secondary" @click="handlePrint" size="large" />
+                        <Button label="Download Packing Slip PDF" icon="pi pi-download" severity="secondary" @click="handlePrint" size="large" />
                         <Button label="Print Picking List" icon="pi pi-file-pdf" severity="info" @click="handlePrintPickingList" size="large" />
                         <Button label="Start New Packing" @click="handleNew" size="large" />
                     </div>

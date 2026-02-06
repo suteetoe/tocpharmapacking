@@ -26,12 +26,6 @@ const router = createRouter({
       meta: { layout: MainLayout, requiresAuth: true }
     },
     {
-      path: '/print/packing/:id',
-      name: 'PrintPacking',
-      component: () => import('../views/packing/PrintView.vue'),
-      meta: { layout: 'div', requiresAuth: true }
-    },
-    {
       path: '/picking-list',
       name: 'PickingList',
       component: () => import('../views/picking/PickingListView.vue'),

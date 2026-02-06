@@ -258,6 +258,45 @@ export const usePackingStore = defineStore('packing', () => {
         }
     }
 
+    async function downloadPackingPdf(invoiceNo: string): Promise<boolean> {
+        loading.value = true;
+        error.value = null;
+        try {
+            const response = await api.get(`/invoice/packing/${encodeURIComponent(invoiceNo)}/pdf`, {
+                responseType: 'blob'
+            });
+
+            // Create a URL from the blob
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+
+            // Open PDF in new window for printing
+            const link = document.createElement('a');
+            link.href = url;
+            const filename = `Packing_${invoiceNo}_${new Date().toISOString().split('T')[0]}.pdf`;
+            link.setAttribute('download', filename);
+
+            // Open in new tab for printing
+            const newWindow = window.open(url, '_blank');
+
+            // If popup blocker prevents new window, fallback to download
+            if (!newWindow) {
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            // Cleanup
+            window.URL.revokeObjectURL(url);
+
+            return true;
+        } catch (e: any) {
+            error.value = e.response?.data?.message || e.message || 'Error downloading PDF';
+            return false;
+        } finally {
+            loading.value = false;
+        }
+    }
+
     function reset() {
         currentStep.value = 1;
         employee.value = null;
@@ -303,6 +342,7 @@ export const usePackingStore = defineStore('packing', () => {
         removeSerial,
         confirmPacking,
         getPackingPrintData,
+        downloadPackingPdf,
         reset,
         resetScanning,
         changeInvoice
