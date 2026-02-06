@@ -18,7 +18,6 @@ const toast = useToast();
 // State
 const packings = ref<PackingWithSerialsResponse[]>([]);
 const loading = ref(false);
-const selectedPackings = ref<PackingWithSerialsResponse[]>([]);
 
 // Filters
 const filters = ref({
@@ -145,42 +144,6 @@ const downloadSinglePickingList = async (packing: PackingWithSerialsResponse) =>
     await downloadPdfFromApi(packing.doc_no);
 };
 
-const printBatchPickingList = async () => {
-    if (selectedPackings.value.length === 0) {
-        toast.add({
-            severity: 'warn',
-            summary: 'Warning',
-            detail: 'Please select at least one order',
-            life: 3000
-        });
-        return;
-    }
-
-    // Print first selected order (browsers typically block multiple popups)
-    const firstPacking = selectedPackings.value[0];
-    if (firstPacking) {
-        await downloadPdfFromApi(firstPacking.doc_no);
-    }
-};
-
-const downloadBatchPickingList = async () => {
-    if (selectedPackings.value.length === 0) {
-        toast.add({
-            severity: 'warn',
-            summary: 'Warning',
-            detail: 'Please select at least one order',
-            life: 3000
-        });
-        return;
-    }
-
-    // Download first selected order (browsers typically block multiple downloads)
-    const firstPacking = selectedPackings.value[0];
-    if (firstPacking) {
-        await downloadPdfFromApi(firstPacking.doc_no);
-    }
-};
-
 // Initialize default dates to current month
 const initializeDefaultDates = () => {
     const now = new Date();
@@ -203,24 +166,7 @@ onMounted(() => {
 
         <Card>
             <template #title>
-                <div class="flex items-center justify-between">
-                    <span>ใบจัดสินค้า (Picking List)</span>
-                    <div class="flex gap-2">
-                        <Button
-                            label="Print Selected"
-                            icon="pi pi-print"
-                            severity="secondary"
-                            :disabled="selectedPackings.length === 0"
-                            @click="printBatchPickingList"
-                        />
-                        <Button
-                            label="Download Selected"
-                            icon="pi pi-download"
-                            :disabled="selectedPackings.length === 0"
-                            @click="downloadBatchPickingList"
-                        />
-                    </div>
-                </div>
+                <span>ใบจัดสินค้า (Picking List)</span>
             </template>
 
             <template #content>
@@ -276,7 +222,6 @@ onMounted(() => {
                 <!-- Data Table -->
                 <DataTable
                     :value="filteredPackings"
-                    v-model:selection="selectedPackings"
                     :loading="loading"
                     dataKey="doc_no"
                     paginator
@@ -298,8 +243,6 @@ onMounted(() => {
                             <ProgressSpinner style="width: 50px; height: 50px" />
                         </div>
                     </template>
-
-                    <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
 
                     <Column field="doc_no" header="เลขที่ Invoice" sortable>
                         <template #body="{ data }">
@@ -339,7 +282,7 @@ onMounted(() => {
                         </template>
                     </Column>
 
-                    <Column header="Actions" style="width: 150px">
+                    <Column header="Actions" style="width: 120px">
                         <template #body="{ data }">
                             <div class="flex gap-1">
                                 <Button
@@ -367,16 +310,8 @@ onMounted(() => {
 
                 <!-- Summary -->
                 <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="text-gray-600">รายการทั้งหมด:</span>
-                            <span class="font-medium ml-1">{{ filteredPackings.length }}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600">เลือก:</span>
-                            <span class="font-medium ml-1">{{ selectedPackings.length }}</span>
-                        </div>
-                    </div>
+                    <span class="text-gray-600">รายการทั้งหมด:</span>
+                    <span class="font-medium ml-1">{{ filteredPackings.length }}</span>
                 </div>
             </template>
         </Card>
