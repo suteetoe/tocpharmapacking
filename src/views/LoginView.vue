@@ -7,7 +7,7 @@ import Password from 'primevue/password';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
-import { site_name } from '../data/app'
+import { APP_NAME } from '@/config'
 
 const username = ref('');
 const password = ref('');
@@ -29,7 +29,7 @@ const handleLogin = async () => {
     <Card class="w-full max-w-md shadow-lg">
       <template #title>
         <div class="text-center text-2xl font-bold text-gray-800 mb-4">
-          {{ site_name }}
+          {{ APP_NAME }}
         </div>
       </template>
       <template #content>

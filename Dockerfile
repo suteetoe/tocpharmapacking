@@ -11,4 +11,10 @@ FROM node:20-alpine as production-stage
 WORKDIR /app
 RUN npm install -g serve
 COPY --from=build-stage /app/dist ./dist
-CMD ["serve", "-s", "dist"]
+
+# Copy entrypoint script เข้าไป
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# CMD ["serve", "-s", "dist"]
+ENTRYPOINT ["/entrypoint.sh"]

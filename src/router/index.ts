@@ -3,9 +3,10 @@ import { useAuthStore } from '../stores/auth';
 import LoginView from '../views/LoginView.vue';
 import DashboardView from '../views/DashboardView.vue';
 import MainLayout from '../layouts/MainLayout.vue';
+import { getSafeBaseUrl } from '@/config';
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.VITE_APP_BASE_URL),
+  history: createWebHistory(getSafeBaseUrl()),
   routes: [
     {
       path: '/login',
