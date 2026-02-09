@@ -17,8 +17,7 @@ sed -i "s|VITE_APP_BASE_URL_PLACEHOLDER|${VITE_APP_BASE_URL}|g" $CONFIG_FILE
 sed -i "s|VITE_API_URL_PLACEHOLDER|${VITE_API_URL}|g" $CONFIG_FILE
 
 # แทนที่ src ของ config.js ใน index.html ด้วย VITE_APP_BASE_URL
-sed -i "s|src=\"/config.js\"|src=\"${VITE_APP_BASE_URL}config.js\"|g" $INDEX_FILE
-sed -i "s|src=\"/assets/|src=\"${VITE_APP_BASE_URL}assets/|g" $INDEX_FILE
+sed -i "s|VITE_APP_BASE_URL_PLACEHOLDER|${VITE_APP_BASE_URL}|g" $INDEX_FILE
 
 echo "Starting serve..."
 
