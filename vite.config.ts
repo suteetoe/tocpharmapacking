@@ -1,4 +1,6 @@
 /// <reference types="vitest" />
+import { fileURLToPath, URL } from 'node:url'
+
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import VueDevTools from 'vite-plugin-vue-devtools'
@@ -16,6 +18,11 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
     },
+  },
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
   },
   server: {
     port: 8080
