@@ -22,4 +22,4 @@ sed -i "s|VITE_APP_BASE_URL_PLACEHOLDER|${VITE_APP_BASE_URL}|g" $INDEX_FILE
 echo "Starting serve..."
 
 # รัน serve ต่อ โดยใช้ exec เพื่อให้ Docker จัดการ process ได้ถูกต้อง
-exec serve -s dist -l 3000
+exec serve -s dist
