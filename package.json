@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:production": "vite --mode production",
-    "build-old": "vue-tsc -b && vite build --assetsDir=tocpacking/assets",
-    "build": "vue-tsc -b && vite build",
+    "build": "vue-tsc -b && vite build --assetsDir=tocpacking/assets",
+    "build-notwork": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest"
   },

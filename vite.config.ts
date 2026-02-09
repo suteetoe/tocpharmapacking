@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
-    base: env.VITE_APP_BASE_URL || "/",
+    // base: env.VITE_APP_BASE_URL || "/",
     server: {
       port: 8080,
     },
