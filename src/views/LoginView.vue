@@ -7,7 +7,7 @@ import Password from 'primevue/password';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
-import { site_name } from '@/data/app'
+import { site_name } from '../data/app'
 
 const username = ref('');
 const password = ref('');
