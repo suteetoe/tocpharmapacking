@@ -266,27 +266,26 @@ export const usePackingStore = defineStore('packing', () => {
                 responseType: 'blob'
             });
 
-            // Create a URL from the blob
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            // Create blob with explicit MIME type for proper download handling
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
 
-            // Open PDF in new window for printing
+            // Create hidden download link
             const link = document.createElement('a');
             link.href = url;
             const filename = `Packing_${invoiceNo}_${new Date().toISOString().split('T')[0]}.pdf`;
             link.setAttribute('download', filename);
+            link.style.display = 'none';
+            document.body.appendChild(link);
 
-            // Open in new tab for printing
-            const newWindow = window.open(url, '_blank');
+            // Trigger download
+            link.click();
 
-            // If popup blocker prevents new window, fallback to download
-            if (!newWindow) {
-                document.body.appendChild(link);
-                link.click();
+            // Cleanup after a short delay to ensure download starts
+            setTimeout(() => {
                 document.body.removeChild(link);
-            }
-
-            // Cleanup
-            window.URL.revokeObjectURL(url);
+                window.URL.revokeObjectURL(url);
+            }, 100);
 
             return true;
         } catch (e: any) {

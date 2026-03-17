@@ -41,32 +41,34 @@ const filteredPackings = computed(() => {
     return result;
 });
 
-// Helper function to download PDF from API and open in new window for printing
+// Helper function to download PDF from API with proper browser handling
 const downloadPdfFromApi = async (invoiceNo: string): Promise<boolean> => {
     try {
         const response = await api.get(`/invoice/packing/${encodeURIComponent(invoiceNo)}/pdf`, {
             responseType: 'blob'
         });
 
-        // Create a URL from the blob
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        // Create blob with explicit MIME type for proper download handling
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
 
-        // Open in new tab for printing
-        const newWindow = window.open(url, '_blank');
+        // Create hidden download link
+        const link = document.createElement('a');
+        link.href = url;
+        const filename = `Packing_${invoiceNo}_${new Date().toISOString().split('T')[0]}.pdf`;
+        link.setAttribute('download', filename);
+        link.style.display = 'none';
+        document.body.appendChild(link);
 
-        // If popup blocker prevents new window, create download link
-        if (!newWindow) {
-            const link = document.createElement('a');
-            link.href = url;
-            const filename = `Packing_${invoiceNo}_${new Date().toISOString().split('T')[0]}.pdf`;
-            link.setAttribute('download', filename);
-            document.body.appendChild(link);
-            link.click();
+        // Trigger download
+        link.click();
+
+        // Cleanup after a short delay to ensure download starts
+        setTimeout(() => {
             document.body.removeChild(link);
-        }
+            window.URL.revokeObjectURL(url);
+        }, 100);
 
-        // Cleanup
-        window.URL.revokeObjectURL(url);
         return true;
     } catch (error: any) {
         toast.add({
