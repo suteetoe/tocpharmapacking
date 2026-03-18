@@ -41,33 +41,40 @@ const filteredPackings = computed(() => {
     return result;
 });
 
-// Helper function to download PDF from API with proper browser handling
+// Helper function to download PDF and open in new tab using iframe
 const downloadPdfFromApi = async (invoiceNo: string): Promise<boolean> => {
     try {
         const response = await api.get(`/invoice/packing/${encodeURIComponent(invoiceNo)}/pdf`, {
             responseType: 'blob'
         });
 
-        // Create blob with explicit MIME type for proper download handling
+        // Create blob with explicit MIME type
         const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
+        const blobUrl = window.URL.createObjectURL(blob);
 
-        // Create hidden download link
-        const link = document.createElement('a');
-        link.href = url;
+        // 1. Trigger download
+        const downloadLink = document.createElement('a');
+        downloadLink.href = blobUrl;
         const filename = `Packing_${invoiceNo}_${new Date().toISOString().split('T')[0]}.pdf`;
-        link.setAttribute('download', filename);
-        link.style.display = 'none';
-        document.body.appendChild(link);
+        downloadLink.setAttribute('download', filename);
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
 
-        // Trigger download
-        link.click();
+        // 2. Open in new tab using iframe (works better in Edge)
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(
+                `<iframe src='${blobUrl}' style='width:100%;height:100%;border:none;'></iframe>`
+            );
+            printWindow.document.close();
+        }
 
-        // Cleanup after a short delay to ensure download starts
+        // Cleanup blob URL after a delay
         setTimeout(() => {
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        }, 100);
+            window.URL.revokeObjectURL(blobUrl);
+        }, 5000);
 
         return true;
     } catch (error: any) {
